@@ -15,6 +15,13 @@ public class ShoppingCart implements IShoppingCart {
         this.pricer = pricer;
     }
 
+    /**
+     * Created overloaded method so that the user can toggle the receipt format. Took this approach as till hardware
+     * may create ShoppingCart object without boolean value. This allows for True to be the default value for the
+     * format type if no boolean value inputted
+     * @param pricer price database for items in shop
+     * @param defaultFormat toggle receipt format. True = default view, False = alternative view
+     */
     public ShoppingCart(Pricer pricer, Boolean defaultFormat) {
         this.pricer = pricer;
         this.defaultFormat = defaultFormat;
@@ -29,6 +36,11 @@ public class ShoppingCart implements IShoppingCart {
         }
     }
 
+    /**
+     * Utilised StringBuilder instead of string format for better efficiency
+     * Fetches format for each line from ReceiptFormat class
+     * Did not want to change the fact that the result is printed to output incase that had something to do with till hardware
+     */
     public void printReceipt() {
 
         float totalPrice = 0;

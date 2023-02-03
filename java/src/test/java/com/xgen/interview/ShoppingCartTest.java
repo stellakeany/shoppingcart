@@ -15,9 +15,14 @@ public class ShoppingCartTest {
 
     private ByteArrayOutputStream myOut;
     private ShoppingCart sc;
-    private final boolean defaultFormat = true;
+
+    private final boolean defaultFormat = true; //changing this value to false allows you to run all the tests again but for the alternative receipt format
     private final Pricer pricer = new Pricer();
     private final ReceiptFormat receipt = new ReceiptFormat();
+
+    /**
+     * Runs following code before each test
+     */
     @Before
     public void setup(){
         myOut = new ByteArrayOutputStream();
