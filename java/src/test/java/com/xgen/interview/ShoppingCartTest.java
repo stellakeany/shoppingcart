@@ -16,6 +16,8 @@ public class ShoppingCartTest {
     private ByteArrayOutputStream myOut;
     private ShoppingCart sc;
     private final boolean defaultFormat = true;
+    private final Pricer pricer = new Pricer();
+    private final ReceiptFormat receipt = new ReceiptFormat();
     @Before
     public void setup(){
         myOut = new ByteArrayOutputStream();
@@ -24,23 +26,38 @@ public class ShoppingCartTest {
     }
 
     @Test
+    public void receiptFormatCorrect(){
+        String actual = receipt.formatLine("apple", pricer.getPrice("apple"), 1, defaultFormat) +
+                receipt.formatTotal(1);
+        String expected;
+        if (defaultFormat){
+            expected = "apple - 1 - €1.00\nTotal: €1.00";
+        } else expected = "€1.00 - 1 - apple\nTotal: €1.00";
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void canAddAnItem() {
         sc.addItem("apple", 1);
 
+        String expectedOutput = receipt.formatLine("apple", pricer.getPrice("apple"), 1, defaultFormat) +
+                receipt.formatTotal(1);
+
         sc.printReceipt();
-        if (defaultFormat){
-            assertEquals(String.format("apple - 1 - €1.00%n"), myOut.toString());
-        }else assertEquals(String.format("€1.00 - 1 - apple%n"), myOut.toString());
+        assertEquals(expectedOutput, myOut.toString());
     }
 
     @Test
     public void canAddMoreThanOneItem() {
         sc.addItem("apple", 2);
 
+        String expectedOutput = receipt.formatLine("apple", pricer.getPrice("apple"), 2, defaultFormat) +
+                receipt.formatTotal(2);
+
         sc.printReceipt();
-        if (defaultFormat){
-            assertEquals(String.format("apple - 2 - €2.00%n"), myOut.toString());
-        }else assertEquals(String.format("€2.00 - 2 - apple%n"), myOut.toString());
+        assertEquals(String.format(expectedOutput), myOut.toString());
+
     }
 
     @Test
@@ -48,11 +65,12 @@ public class ShoppingCartTest {
         sc.addItem("apple", 2);
         sc.addItem("banana", 1);
 
-        sc.printReceipt();
+        String expectedOutput = receipt.formatLine("apple", pricer.getPrice("apple"), 2, defaultFormat)
+                + receipt.formatLine("banana", pricer.getPrice("banana"), 1, defaultFormat)
+                + receipt.formatTotal(4);
 
-        if (defaultFormat){
-            assertEquals(String.format("apple - 2 - €2.00%nbanana - 1 - €2.00%n"), myOut.toString());
-        }else assertEquals(String.format("€2.00 - 2 - apple%n€2.00 - 1 - banana%n"), myOut.toString());
+        sc.printReceipt();
+        assertEquals(expectedOutput, myOut.toString());
 
     }
 
@@ -60,11 +78,10 @@ public class ShoppingCartTest {
     public void doesntExplodeOnMysteryItem() {
         sc.addItem("crisps", 2);
 
+        String expectedOutput = receipt.formatLine("crisps", pricer.getPrice("crisps"), 2, defaultFormat) +
+                receipt.formatTotal(0);
         sc.printReceipt();
-
-        if (defaultFormat){
-            assertEquals(String.format("crisps - 2 - €0.00%n"), myOut.toString());
-        }else assertEquals(String.format("€0.00 - 2 - crisps%n"), myOut.toString());
+        assertEquals(expectedOutput, myOut.toString());
     }
 }
 

@@ -31,16 +31,17 @@ public class ShoppingCart implements IShoppingCart {
 
     public void printReceipt() {
 
-        Object[] keys = contents.keySet().toArray();
+        float totalPrice = 0;
+        StringBuilder output = new StringBuilder();
+        ReceiptFormat receipt = new ReceiptFormat();
+        Object[] itemNames = contents.keySet().toArray();
 
-        for (Object key : keys) {
-            float price = pricer.getPrice((String) key) * contents.get(key);
-            float priceFloat = price / 100;
-            String priceString = String.format("€%.2f", priceFloat);
-
-            if (defaultFormat) {
-                System.out.println(key + " - " + contents.get(key) + " - " + priceString);
-            } else System.out.println(priceString+ key + " - " + contents.get(key) + " - ");
+        for (Object itemName : itemNames) {
+            float price = pricer.getPrice((String) itemName) * contents.get(itemName);
+            output.append(receipt.formatLine((String) itemName, pricer.getPrice((String) itemName), contents.get(itemName), defaultFormat));
+            totalPrice+=(price / 100);
         }
+        output.append(receipt.formatTotal(totalPrice));
+        System.out.print(output);
     }
 }
